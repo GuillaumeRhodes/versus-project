@@ -1,0 +1,34 @@
+// versus.scss
+.versus-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+  
+    .image-container {
+        display: flex;
+        justify-content: center;
+      width: 50%;
+      transition: transform 0.2s;
+  
+      .image-wrapper {
+        width: 50%;  // Fixe la largeur du conteneur
+        height: 50vh;  // Fixe la hauteur du conteneur
+        overflow: hidden;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;  // Ajuste le comportement de l'image pour couvrir le conteneur
+        }
+      }
+  
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
+  }
+  
