@@ -17,7 +17,7 @@ class Image
     private ?string $url = null;
 
     #[ORM\Column]
-    private ?int $vote_count = null;
+    private ?int $voteCount = null;
 
     public function getId(): ?int
     {
@@ -38,12 +38,12 @@ class Image
 
     public function getVoteCount(): ?int
     {
-        return $this->vote_count;
+        return $this->voteCount;
     }
 
-    public function setVoteCount(int $vote_count): static
+    public function setVoteCount(int $voteCount): static
     {
-        $this->vote_count = $vote_count;
+        $this->voteCount = $voteCount;
 
         return $this;
     }
