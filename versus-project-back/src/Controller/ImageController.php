@@ -13,38 +13,59 @@ class ImageController extends AbstractController
 #[Route('/api/images/{id}/vote', name: 'app_image', methods: ['POST'])]
     public function vote(EntityManagerInterface $entityManager, $id)
     {
-        // Récupérer l'image depuis la base de données
+        // get image from database
         $image = $entityManager->getRepository(Image::class)->find($id);
 
-        // Vérifier si l'image existe
+        // verify if image exists
         if (!$image) {
             return new JsonResponse(['error' => 'Image not found'], 404);
         }
 
-        // Incrémenter le voteCount
+        // increment vote count
         $image->setVoteCount($image->getVoteCount() + 1);
 
-        // Sauvegarder les modifications en base de données
+        // save to database
         $entityManager->flush();
 
-        // Répondre avec succès
+        // send response success
         return new JsonResponse(['success' => true]);
     }
 
-    #[Route('/api/images/vote-percentages', name: 'app_image_vote_percentages')]
-    public function getVotePercentages(EntityManagerInterface $entityManager)
+    #[Route('/api/images/{id}/vote-percentages', name: 'app_image_vote_percentages')]
+    public function getVotePercentages(EntityManagerInterface $entityManager, $id)
     {
-        $images = $entityManager->getRepository(Image::class)->findAll();
-        $totalVotes = array_sum(array_map(fn($image) => $image->getVoteCount(), $images));
+        // get image from database
+        $image1 = $entityManager->getRepository(Image::class)->find($id);
 
-        $data = [];
-        foreach ($images as $image) {
-            $data[] = [
-                'id' => $image->getId(),
-                'url' => $image->getUrl(),
-                'percentage' => $totalVotes > 0 ? ($image->getVoteCount() / $totalVotes) * 100 : 0
-            ];
+        // verify if image exists
+        if (!$image1) {
+            return $this->json(['error' => 'Image not found'], 404);
         }
+
+        // get next image from database
+        $image2 = $entityManager->getRepository(Image::class)->find($id + 1);
+
+        // verify if next image exists
+        if (!$image2) {
+            return $this->json(['error' => 'Next image not found'], 404);
+        }
+
+        // calcul total votes
+        $totalVotes = $image1->getVoteCount() + $image2->getVoteCount();
+
+        // calcul percentage of votes
+        $percentage1 = $totalVotes > 0 ? ($image1->getVoteCount() / $totalVotes) * 100 : 0;
+        $percentage2 = $totalVotes > 0 ? ($image2->getVoteCount() / $totalVotes) * 100 : 0;
+
+        // build response
+        $data = [
+            'image1_id' => $image1->getId(),
+            'image1_url' => $image1->getUrl(),
+            'image1_percentage' => $percentage1,
+            'image2_id' => $image2->getId(),
+            'image2_url' => $image2->getUrl(),
+            'image2_percentage' => $percentage2,
+        ];
 
         return $this->json($data);
     }
